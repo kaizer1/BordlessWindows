@@ -84,6 +84,7 @@ namespace lLogs {
 	export void logPrintWindowsClear(const char* messagesToPrint, int n = 0) {
 	
 		//LPCWSTR
+		//change LPCWSTR to char2 
 
 		//OutputDebugStringW((LPCWSTR)messagesToPrint);
 
