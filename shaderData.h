@@ -27,7 +27,7 @@
 
 
 const static char aShader[] =
-"#version 430                    \n"
+"#version 420                    \n"
 "                                \n"
 "layout (location = 0) in vec2 aVertex;           \n"
 "layout (location = 1) in vec2 tex;            \n"
@@ -60,7 +60,7 @@ const static char aShader[] =
 
 
 const static char bShader[] =
-"#version 430                 \n"
+"#version 420                 \n"
 "                                       \n"
 "#ifdef GL_FRAGMENT_PRECISION_HIGH              \n"
 "precision highp float;                         \n"
@@ -72,13 +72,23 @@ const static char bShader[] =
 "                                       \n"
 "uniform sampler2D simpleTexture; \n"
 "uniform vec3      colorUniform;  \n"
+"uniform vec2       resolutions;  \n"
+"uniform vec2       sccreenOFf;   \n"
 "//in vec2 texColor;              \n"
 "in vec2 texCoord;                \n"
 "out vec4 finalCl;                \n"
+"const float max = pow(0.2, 4);   \n"
 "                                 \n"
 "void main()                      \n"
-" {                              \n"
-" finalCl = vec4(colorUniform.xyz, 1.0); \n"
+" {                               \n"
+"	vec2 pos = (gl_FragCoord.xy - sccreenOFf) / resolutions;							  \n" 
+"	float vignet = pos.x * pos.y * (1-pos.x) * (1-pos.y);								\n"
+"   if(smoothstep(0, max, vignet) <= 0.0f) {     \n"
+"     discard; } \n "
+" else {  \n"
+"   //debugPrintfEXT(\"My smoothsteps is % f\", smoothstep(0, max, vignet) );  \n"
+"	finalCl = vec4(colorUniform.xyz * smoothstep(0, max, vignet), smoothstep(0, max, vignet));	}  \n"
+" //finalCl = vec4(colorUniform.xyz, 1.0); \n"
 " //finalCl = texture(simpleTexture, texCoord) * vec4(colorUniform.xyz, 1.0); \n"
 " }";
 
@@ -98,7 +108,7 @@ const char aShaderTexture[] =
 "void main()                                          \n"
 "{                                                    \n"
 "    colorGo = bColor;                                \n"
-"gl_Position = matrixFinal * vec4(aVertex, 0.0, 1.0); \n"
+"    gl_Position = matrixFinal * vec4(aVertex, 0.0, 1.0); \n"
 "                     \n"
 "}";
 

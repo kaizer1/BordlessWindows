@@ -44,7 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <EnableASAN>true</EnableASAN>
+    <EnableASAN>false</EnableASAN>
     <EnableFuzzer>false</EnableFuzzer>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -148,6 +148,7 @@
     <ClInclude Include="lDefine.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shaderData.h" />
+    <ClInclude Include="ShaderData2.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BordlessWindows.rc" />

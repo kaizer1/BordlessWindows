@@ -10,6 +10,7 @@
 #include <string_view>
 
 import lLog;
+import lMath;
 
 //#pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "dwmapi.lib")
@@ -110,7 +111,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     case WM_NCHITTEST: {
-        std::cout << " in this " << GET_X_LPARAM(lParam) << " \n";
+        //std::cout << " in this " << GET_X_LPARAM(lParam) << " \n";
+
+        if (myMainDraw != nullptr) {
+            myMainDraw->emptyMousePlace(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        }
         // When we have no border or title bar, we need to perform our
         // own hit testing to allow resizing and moving.
         {
@@ -245,7 +250,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         attributeList[0] = WGL_CONTEXT_MAJOR_VERSION_ARB;
         attributeList[1] = 4;
         attributeList[2] = WGL_CONTEXT_MINOR_VERSION_ARB;
-        attributeList[3] = 4;
+        attributeList[3] = 3;
         attributeList[4] = 0;
 
 
@@ -311,6 +316,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         case 'Q':
       //LosOutputStringConvert(" press Q ");
+      myMainDraw->changeDrawRenderAReady(); // = false;
       myMainDraw->DestroyAll();
       finished = true;
       //DestroyAll();
@@ -364,6 +370,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONUP:
     {
         std::cout << " left mouse UP  " << " \n";
+        POINT pLos;
+        ::GetCursorPos(&pLos);
+        const long xSend = pLos.x - 200;
+        const long ySend = pLos.y - 200;
+        myMainDraw->pressMouse(xSend, ySend, losMath::PressVaraint::MouseUp);
         break;
     }
 
@@ -380,14 +391,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
 
+    case WM_MOUSEMOVE:
+    {
+
+        POINT pLos;
+        ::GetCursorPos(&pLos);
+        const long xSend = pLos.x - 200;
+        const long ySend = pLos.y - 200;
+
+        myMainDraw->pressMouse(xSend, ySend, losMath::PressVaraint::MouseMove);
+
+        break;
+    }
+
     case WM_LBUTTONDOWN:
     {
         //LosOutputStringConvert("d);
         POINT pLos;
         ::GetCursorPos(&pLos);
         std::cout << " left qmouse Down  " << " \n";
-        std::cout << " press button " <<  pLos.x << " \n";
-        std::cout << " press button 2 " << pLos.y << " \n";
+        std::cout << " press buttonX " <<  pLos.x - 200 << " \n";
+        std::cout << " press buttonY  " << pLos.y - 200 << " \n";
+        const long xSend = pLos.x - 200;
+        const long ySend = pLos.y - 200;
+        myMainDraw->pressMouse(xSend, ySend, losMath::PressVaraint::MouseDown);  // PressVaraint
         //LosOutputStringConvert(" press buttons ", pLos.x);
         //LosOutputStringConvert("press buttons ", pLos.y);
 
@@ -411,6 +438,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 
+bool openFileDialog(LPWSTR szFileName) {
+
+  OPENFILENAME ofn;
+  auto FilterSpec = L"Object Files(.obj)\0*.obj\0All Files(.)\0*.*\0*.glfw\0";
+  auto Title = L"Open 3d file..";
+
+  //LPWSTR szFileTitle[MAX_PATH] = " ";
+  
+  //WCHAR laskdjfalskdf = WCHAR("asldkfjaksdfkjashdjkfaskjdfjkasdhfsd");
+  //LPWSTR szFileName2 = &laskdjfalskdf;
+  
+  //LPWSTR szFileName3 = "sdf";
+  //WCHAR df(szFileName2);
+  //*szFileName = 0;
+  //wchar_t A{ "sdfsdf" };
+
+/* fill in non-variant fields of OPENFILENAME struct. */
+  ofn.lStructSize = sizeof(OPENFILENAME);
+  ofn.hwndOwner = hWnd; //GetFocus(); // 
+  ofn.lpstrFilter = FilterSpec;
+  ofn.lpstrCustomFilter = NULL;
+  ofn.nMaxCustFilter = 0;
+  ofn.nFilterIndex = 0;
+  ofn.lpstrFile = szFileName;  // LPWSTR
+  ofn.nMaxFile = MAX_PATH;
+  ofn.lpstrInitialDir = L"."; // Initial directory.
+  ofn.lpstrFileTitle = nullptr; // *szFileTitle;
+  ofn.nMaxFileTitle = MAX_PATH;
+  ofn.lpstrTitle = Title;
+  ofn.lpstrDefExt = 0; // I've set to null for demonstration
+  ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+
+    return GetOpenFileName(&ofn);
+}
+
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int  nCmdShow)
 {
 
@@ -423,6 +487,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 		loadConsole();
         lLogs::logPrintWindows();
+        std::function<void(LPWSTR szFileName)> callLoad;
+        callLoad = openFileDialog;
 	
 		WNDCLASSEXW wcex;
 		wcex.cbSize = sizeof(WNDCLASSEX);
@@ -470,6 +536,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
      std::cout << " pre Height  = " << destHeight1 << " \n";
      myMainDraw->setSize(destWidth1, destHeight1);
      myMainDraw->buildP();
+     myMainDraw->setLoadCallback(callLoad);
+     
      
 
     // ::SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);

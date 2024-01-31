@@ -93,6 +93,7 @@ namespace lLogs {
 		std::wstring kjj(newSteing.size(), 0);
 		MultiByteToWideChar(CP_UTF8, 0, &newSteing[0], (int)newSteing.size(), &kjj[0], newSteing.size());
 
+		
 
 		//  n : 0 ?   , 
 
@@ -113,7 +114,8 @@ namespace lLogs {
 		std::string newSteing = messagesToPrint;
 		std::wstring kjj(newSteing.size(), 0);
 		MultiByteToWideChar(CP_UTF8, 0, &newSteing[0], (int)newSteing.size(), &kjj[0], newSteing.size());
-		//wsprintfW(EmptyMess, L"Debug Message: %s %2.6f \n", kjj.c_str(), n); //
+		wsprintfW(EmptyMess, L"Debug Message1: %s \n", kjj.c_str()); //
+		
 		
 		OutputDebugStringW(EmptyMess);
 

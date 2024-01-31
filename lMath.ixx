@@ -7,6 +7,8 @@ module;
 #endif 
 #include <cfloat>
 
+#include <functional>
+#include <memory>
 
 //import std;  // BIG ERROR ! 
 
@@ -18,7 +20,57 @@ namespace losMath {
 
     export using lFloat = float;
     using lDouble = double;
+    float zoom = 15.0f;
+    float rotx = 0;
+    float roty = 0.001f;
+    float tx = 0;
+    float ty = 0;
+    int lastx = 0;
+    int lasty = 0;
 
+
+   
+
+
+
+    export enum PressVaraint { MouseDown, MouseUp, MouseWheel, MouseMove };
+
+
+
+
+    export struct ButtonD {
+    public: 
+
+        ButtonD() : x(0), y(0), width(0), height(0){
+
+        }
+
+        ButtonD(int x1, int y1, int width1, int height1 ) : x(x1), y(y1), width(width1), height(height1) {
+            //callBackFunc = std::move(func);
+        }
+
+        void setFunc(std::function<void()>& func) {
+            callBackFunc = std::move(func);
+        }
+
+        int x;
+        int y;
+        int width;
+        int height;
+        std::function<void()> callBackFunc;
+
+        void setPr(bool b) {
+            setPress = b;
+        }
+
+        bool returnPress() {
+            return setPress;
+        }
+
+    private: 
+
+        bool setPress = false;
+    };
 
     export class lv2
     {
@@ -1276,6 +1328,122 @@ namespace losMath {
     }
 
 
+
+
+
+    export class Camera {
+
+    public:
+        explicit Camera(float w, float h) : lastX(0 ), lastY(0), rotX(0.0f), rotY(0.0f) {
+
+            persMatrixCamera = perspectiveLosRithg(45.0f, w / h, 0.1f, 100.f);
+
+            lv3 eye, cent;
+
+            eye = lv3{ 3.5f , 5.1f, 2.2f + 0.0f };
+            cent = lv3{ 1.0f, 1.0f, 0.1f };
+
+            lv3 eye2 = lv3{ 0.2f, 1.3f, 1.9f };
+            lv3 eye3 = lv3{ -2.6f, 2.2f, -0.4f };
+
+
+            //LosVector3  = LosVector3 {BearTransX, 0.0f, BearTransZ}; // was 0.4f, 0.0f, 0.0f
+            lv3 up{ 0, 1, 0 };
+            lm44 er = identity();
+
+            lm44 LookAt = LookAt_RightLos(eye, cent, up, er);
+            lm44 LosMat = identity();
+            lm44 finalMM = persMatrixCamera * LookAt * LosMat;
+            auto PAL = persMatrixCamera * LookAt;
+            mainViewMatrix = PAL;
+
+
+        }
+
+        void changeSizeCamera(int& newW, int& newH) {
+            persMatrixCamera = perspectiveLosRithg(45.0f, (float)newW / (float)newH, 0.1f, 100.f);
+
+            lv3 eye, cent;
+
+            eye = lv3{ 4.5f , 5.1f, 3.2f };
+            cent = lv3{ 1.0f, 2.0f, 0.1f };
+
+            lv3 eye2 = lv3{ 0.2f, 1.3f, 1.9f };
+            lv3 eye3 = lv3{ -2.6f, 2.2f, -0.4f };
+
+
+            //LosVector3  = LosVector3 {BearTransX, 0.0f, BearTransZ}; // was 0.4f, 0.0f, 0.0f
+            lv3 up{ 0, 1, 0 };
+            lm44 er = identity();
+
+            lm44 LookAt = LookAt_RightLos(eye, cent, up, er);
+            lm44 LosMat = identity();
+            lm44 finalMM = persMatrixCamera * LookAt * LosMat;
+            auto PAL = persMatrixCamera * LookAt;
+            mainViewMatrix = PAL;
+        }
+
+        lm44 LookAtUpMatrix() {
+
+      
+           lv3 eye = lv3{ 4.5f , 5.1f, 3.2f };
+           lv3 cent = lv3{ 1.0f, 2.0f, 0.1f };
+           lv3 up{ 0, 1, 0 };
+           lm44 er = identity();
+
+           return LookAt_RightLos(eye, cent, up, er);
+             
+        }
+
+        ~Camera() {
+
+        }
+
+
+        void Motion(long x, long y, losMath::PressVaraint press) {
+             
+            auto diffX = x - lastX;
+            auto diffY = y - lastY;
+            lastX = x;
+            lastY = y;
+
+            rotX += (float)0.5f * diffY;
+            rotY += (float)0.5f * diffX;
+
+
+            auto lMat = LookAtUpMatrix();
+            
+            lMat.rotateLosX(rotX);
+            lMat.rotateLosY(rotY);
+               
+            auto PAL = persMatrixCamera * lMat;
+            mainViewMatrix = PAL;
+             
+      
+        }
+
+
+        void updateCamera() {
+
+        }
+
+
+        lm44 getPALMatrix() {
+            return mainViewMatrix;
+        }
+    protected:
+
+    private:
+
+        lm44 mainViewMatrix;
+        lm44 persMatrixCamera;
+        long lastX;
+        long lastY;
+
+        float rotX;
+        float rotY;
+
+    };
 
 
 }

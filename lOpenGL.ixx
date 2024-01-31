@@ -781,7 +781,8 @@ namespace losGraphics {
                 {
                     glGetProgramInfoLog(enterProgram, bufLength, NULL, logBuffer);
                     //losWin::LosOutputStringConvert(" Count not link program setAxis: ");
-                    std::cout << logBuffer << " \n";
+                    lLogs::logPrintWindowsClearFloat(logBuffer, 0);
+                    std::cout << "ksdjhfksjadhfkjsdhf" << " \n";
                     free(logBuffer);
                     logBuffer = NULL;
                 }
@@ -1101,9 +1102,17 @@ namespace losGraphics {
         glEnable(blend);
     }
 
-        export inline void  glDisablem(unsigned int test) {
-            glDisablem(test);
+    export inline void  glDisablem(unsigned int test) {
+            glDisable(test);
      }
 
 
+    export inline void 	glBlendFuncmOne() {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+  /*  export inline void glDrawArraysm(GLenum mode, GLint first, GLsizei count) {
+        glDrawArrays( mode, first, count);
+    }*/
+    
 }
