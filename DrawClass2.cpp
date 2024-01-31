@@ -501,8 +501,8 @@ void DrawClass::loading3D_Model() {
         std::printf(" ok, my file exists and extension == obj \n");
 
 
-        loadObject = false;
-        glDeleteVertexArraysm(1, &meshVao);
+        //loadObject = false;
+        //glDeleteVertexArraysm(1, &meshVao);
 
         //athre.join();
         Parse3DFile(aNewString);

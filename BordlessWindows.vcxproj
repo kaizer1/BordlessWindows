@@ -158,7 +158,6 @@
     <Image Include="logo_los.ico" />
     <Image Include="loskutGamesMain_ic.bmp" />
     <Image Include="loskutGamesMain_ic.ico" />
-    <Image Include="Q:\DownloadsMain\loskutGamesMain_ic.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

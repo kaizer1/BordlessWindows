@@ -66,9 +66,6 @@
     <Image Include="icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Q:\DownloadsMain\loskutGamesMain_ic.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="loskutGamesMain_ic.bmp">
       <Filter>Resource Files</Filter>
     </Image>
