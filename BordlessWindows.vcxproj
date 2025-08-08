@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DrawClass.h" />
+    <ClInclude Include="fast_obj.h" />
     <ClInclude Include="FontHeaderOne.h" />
     <ClInclude Include="headerOne.h" />
     <ClInclude Include="lDefine.h" />
@@ -156,8 +157,6 @@
   <ItemGroup>
     <Image Include="icon1.ico" />
     <Image Include="logo_los.ico" />
-    <Image Include="loskutGamesMain_ic.bmp" />
-    <Image Include="loskutGamesMain_ic.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

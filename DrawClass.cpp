@@ -131,6 +131,19 @@ void DrawClass::cleanColor() {
     losGraphics::callClear(110.0f/255.0f, 107.0f/255.0f, 102.f/255.0f, 1.0f); // 0.3f, 0.5f, 0.8f 
 }
 
+void DrawClass::zoomIn() {
+
+	lCamera->zoomIn();
+
+}
+
+
+void DrawClass::zoomOut()  {
+
+	lCamera->zoomOut();
+}
+
+
 void DrawClass::pressMouse(const long& x,const long& y, losMath::PressVaraint press) {
 
 	if (press == losMath::PressVaraint::MouseDown) {
@@ -146,7 +159,7 @@ void DrawClass::pressMouse(const long& x,const long& y, losMath::PressVaraint pr
 		}
 
 		MouseDownIS = true;
-		//lCamera->Motion(x, y, press);
+		lCamera->StartDown(x, y);
 
 	} else if (press == losMath::PressVaraint::MouseUp) {
 		std::cout << " mouse press  Up" << " \n";
@@ -164,6 +177,9 @@ void DrawClass::pressMouse(const long& x,const long& y, losMath::PressVaraint pr
 		}
 
 
+		
+
+
 		clearTouchValues();
 		MouseDownIS = false;
 	 }
@@ -173,6 +189,19 @@ void DrawClass::pressMouse(const long& x,const long& y, losMath::PressVaraint pr
 		lCamera->Motion(x, y, press);
 	}
 
+
+	if (press == losMath::PressVaraint::MouseDownRight) {
+
+		MouseDownIS = true;
+		//MouseDownIS = 
+	}
+
+
+	if (press == losMath::PressVaraint::MouseDownRigthUp) {
+
+		MouseDownIS = false;
+		//MouseDownIS = 
+	}
 
 	// check contains press to Button 
 	
@@ -254,6 +283,10 @@ void DrawClass::drawRectangle() noexcept {
 		
 
 		if (loadObject) {
+
+			
+
+			//std::cout << " in object's print and draw " << " \n";
 
 			glUseProgramm(programMesh);
 			glBindVertexArraym(meshVao);

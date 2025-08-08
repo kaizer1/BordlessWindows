@@ -17,6 +17,11 @@ using namespace losGraphics;
 #include <iomanip>
 #include <fstream>
 
+
+#define FAST_OBJ_IMPLEMENTATION
+#include "fast_obj.h"
+
+
 uint32_t  utf8_to_utf32(const char* character)
 {
     uint32_t result = -1;
@@ -67,6 +72,16 @@ void DrawClass::setSize(int& widthMian, int& heightMain) {
     std::cout << " height2  = " << height << " \n";
 
 }
+
+void DrawClass::updateCameraForward() {
+    lCamera->updateCamera();
+}
+
+
+void DrawClass::setRightButtonPress(bool pressed) {
+    lCamera->PressRight(pressed);
+}
+
 
 
 void DrawClass::loadBufferMeshforButton() {
@@ -505,8 +520,57 @@ void DrawClass::loading3D_Model() {
         //glDeleteVertexArraysm(1, &meshVao);
 
         //athre.join();
-        Parse3DFile(aNewString);
+       // Parse3DFile(aNewString);
         
+         auto* aObj = fast_obj_read(aNewString.c_str());
+        
+         std::cout << "my face count " << aObj->face_count << " \n";
+         std::cout << "my index count " << aObj->index_count << " \n";
+         std::cout << "position " << aObj->position_count << " \n";
+         
+         std::cout << " obj object " << aObj->object_count << " \n";
+
+
+         glUseProgramm(programMesh);
+         glBindVertexArraym(meshVao);
+
+
+         GLuint bVertex, bNormal, shotIndexes;
+         glGenBuffersm(1, &bVertex);
+         glGenBuffersm(1, &bNormal);
+         glGenBuffersm(1, &shotIndexes);
+         checkErrorLos(35);
+
+
+
+         glBindBufferm(glArrayBuf, bVertex);
+         {
+             glBufferDatam(glArrayBuf, aObj->position_count * sizeof(GLfloat), &aObj->positions, glStatDraw);
+             glVertexAttribPointerm(0, 3, glFloat, GLFALSE, 0, (const void*)0);
+             glEnableVertexAttribArraym(0);
+         }
+
+  /*       glBindBufferm(glArrayBuf, bNormal);
+         {
+             glBufferDatam(glArrayBuf, aObj->normal_count * sizeof(GLfloat), &aObj->normals, glStatDraw);
+             glVertexAttribPointerm(1, 3, glFloat, GLFALSE, 0, (const void*)0);
+             glEnableVertexAttribArraym(0);
+         }*/
+
+
+         glBindBufferm(glElementArrayBuffer, shotIndexes);
+         glBufferDatam(glElementArrayBuffer, aObj->index_count * sizeof(glUnsignedInt), &aObj->indices, 0x88E4);
+
+         glUseProgramm(0);
+         glBindVertexArraym(0);
+         checkErrorLos(66);
+
+         loadObject = true;
+         sizeIndexes = aObj->index_count;
+
+         fast_obj_destroy(aObj);
+
+
 
     }
     else {

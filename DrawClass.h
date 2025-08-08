@@ -99,10 +99,18 @@ public:
 		lCallbackWinLoad = std::move(funL);
 	}
 
+	void zoomIn();
+	void zoomOut();
+	void updateCameraForward();
+
+	void setRightButtonPress(bool pressed);
+
+	void loading3D_Model();
+
 protected:
 
 	void simpleCall();
-	void loading3D_Model();
+
 	void Parse3DFile(std::string& pathString);
 
 private: 
@@ -173,5 +181,8 @@ private:
 	 ui colorMeshUniform;
 	 bool loadObject = false;
 	 size_t sizeIndexes;
+
+
+
 };
 

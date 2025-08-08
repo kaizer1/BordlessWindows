@@ -33,7 +33,7 @@ namespace losMath {
 
 
 
-    export enum PressVaraint { MouseDown, MouseUp, MouseWheel, MouseMove };
+    export enum PressVaraint { MouseDown, MouseUp, MouseWheel, MouseMove, MouseDownRight, MouseDownRigthUp };
 
 
 
@@ -1334,7 +1334,7 @@ namespace losMath {
     export class Camera {
 
     public:
-        explicit Camera(float w, float h) : lastX(0 ), lastY(0), rotX(0.0f), rotY(0.0f) {
+        explicit Camera(float w, float h) : lastX(0), lastY(0), rotX(0.0f), rotY(0.0f), zoomInValues(45.0f), rigthButtonPress(false), tx{ 0.0f }, ty{0.0f} {
 
             persMatrixCamera = perspectiveLosRithg(45.0f, w / h, 0.1f, 100.f);
 
@@ -1361,7 +1361,11 @@ namespace losMath {
         }
 
         void changeSizeCamera(int& newW, int& newH) {
-            persMatrixCamera = perspectiveLosRithg(45.0f, (float)newW / (float)newH, 0.1f, 100.f);
+           
+             widthToCamera = newW;
+             heightToCamera = newH;
+            
+            persMatrixCamera = perspectiveLosRithg(zoomInValues, (float)newW / (float)newH, 0.1f, 100.f);
 
             lv3 eye, cent;
 
@@ -1380,8 +1384,10 @@ namespace losMath {
             lm44 LosMat = identity();
             lm44 finalMM = persMatrixCamera * LookAt * LosMat;
             auto PAL = persMatrixCamera * LookAt;
+            LookUpMain = LookAt;
             mainViewMatrix = PAL;
         }
+
 
         lm44 LookAtUpMatrix() {
 
@@ -1392,13 +1398,33 @@ namespace losMath {
            lm44 er = identity();
 
            return LookAt_RightLos(eye, cent, up, er);
-             
         }
+
 
         ~Camera() {
 
         }
 
+
+        void zoomIn() {
+            zoomInValues -= 1.0f;
+        }
+
+        void zoomOut() {
+
+            zoomInValues += 1.0f;
+        }
+
+        void StartDown(long x, long y) {
+            lastX = x;
+            lastY = y;
+        }
+
+
+
+        void PressRight(bool pressed) {
+            rigthButtonPress = pressed;
+        }
 
         void Motion(long x, long y, losMath::PressVaraint press) {
              
@@ -1407,17 +1433,53 @@ namespace losMath {
             lastX = x;
             lastY = y;
 
-            rotX += (float)0.5f * diffY;
-            rotY += (float)0.5f * diffX;
+            if(rigthButtonPress)
+            {
 
+
+
+                // glTranslatef(tx,ty,0);
+
+                auto lMat = LookAtUpMatrix();
+
+                 tx += (float)0.05f * diffX;
+                 ty -= (float)0.05f * diffY;
+
+                //lMat.tra(rotX);
+                
+
+               // auto PAL = persMatrixCamera * lMat;
+               // LookUpMain = lMat;
+               // mainViewMatrix = PAL;
+
+
+            } else {
+
+
+
+                
+
+                rotX += (float)0.5f * diffY;
+                rotY += (float)0.5f * diffX;
+
+
+             
+
+            }
+
+            
 
             auto lMat = LookAtUpMatrix();
-            
+
+
+           // lMat.Transposition(lv3{ tx, ty, 0.0f });
             lMat.rotateLosX(rotX);
             lMat.rotateLosY(rotY);
-               
+
             auto PAL = persMatrixCamera * lMat;
+            LookUpMain = lMat;
             mainViewMatrix = PAL;
+
              
       
         }
@@ -1425,6 +1487,30 @@ namespace losMath {
 
         void updateCamera() {
 
+            persMatrixCamera = perspectiveLosRithg(zoomInValues, (float)widthToCamera / (float)heightToCamera, 0.1f, 100.f);
+
+            //lv3 eye, cent;
+
+            //eye = lv3{ 4.5f , 5.1f, 3.2f };
+            //cent = lv3{ 1.0f, 2.0f, 0.1f };
+
+            //lv3 eye2 = lv3{ 0.2f, 1.3f, 1.9f };
+            //lv3 eye3 = lv3{ -2.6f, 2.2f, -0.4f };
+
+
+            ////LosVector3  = LosVector3 {BearTransX, 0.0f, BearTransZ}; // was 0.4f, 0.0f, 0.0f
+            //lv3 up{ 0, 1, 0 };
+            //lm44 er = identity();
+
+            //lm44 LookAt = LookAt_RightLos(eye, cent, up, er);
+            //lm44 LosMat = identity();
+            //lm44 finalMM = persMatrixCamera * LookAt * LosMat;
+            auto PAL = persMatrixCamera * currentLookUP();
+            mainViewMatrix = PAL;
+        }
+
+        lm44 currentLookUP() {
+            return LookUpMain;
         }
 
 
@@ -1442,6 +1528,16 @@ namespace losMath {
 
         float rotX;
         float rotY;
+
+        float tx;
+        float ty;
+
+        float zoomInValues;
+
+        int widthToCamera;
+        int heightToCamera;
+        lm44 LookUpMain;
+        bool rigthButtonPress;
 
     };
 

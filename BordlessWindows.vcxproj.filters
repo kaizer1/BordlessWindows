@@ -56,6 +56,9 @@
     <ClInclude Include="ShaderData2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fast_obj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BordlessWindows.rc">
@@ -64,12 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="loskutGamesMain_ic.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="loskutGamesMain_ic.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="logo_los.ico">

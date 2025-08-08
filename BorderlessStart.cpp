@@ -8,6 +8,7 @@
 #include "headerOne.h"
 #include "DrawClass.h"
 #include <string_view>
+#include "resource.h"
 
 import lLog;
 import lMath;
@@ -364,6 +365,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEWHEEL: 
     {
         std::cout << " wheel mouse " << " \n";
+        auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+        std::cout << " my zDelta = " << zDelta << " \n";
+        if (zDelta > 0) {
+            myMainDraw->zoomIn();
+        }
+        else {
+            myMainDraw->zoomOut();
+        }
+
+
+        myMainDraw->updateCameraForward();
+
+        //auto fwKeys = GET_KEYSTATE_WPARAM(wParam);
+        //std::cout << " my fwkeys = " << fwKeys << " \n";
+        break;
     }
 
 
@@ -379,8 +395,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
     case WM_RBUTTONDOWN: {
-
+        
         std::cout << " Right mouse Down  " << " \n";
+        myMainDraw->setRightButtonPress(true);
+        //myMainDraw->S
+        POINT pLos;
+        ::GetCursorPos(&pLos);
+        const long xSend = pLos.x - 200;
+        const long ySend = pLos.y - 200;
+
+        myMainDraw->pressMouse(xSend, ySend, losMath::PressVaraint::MouseDownRight);
         break;
     }
 
@@ -388,6 +412,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         
         std::cout << " Right button pressUP " << " \n";
+        myMainDraw->setRightButtonPress(false);
+
+        POINT pLos;
+        ::GetCursorPos(&pLos);
+        const long xSend = pLos.x - 200;
+        const long ySend = pLos.y - 200;
+
+        myMainDraw->pressMouse(xSend, ySend, losMath::PressVaraint::MouseDownRigthUp);
         break;
     }
 
@@ -484,8 +516,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	
 		UNREFERENCED_PARAMETER(hPrevInstance);
 		UNREFERENCED_PARAMETER(lpCmdLine);
-
-		loadConsole();
+        
+		// loadConsole();
+        
         lLogs::logPrintWindows();
         std::function<void(LPWSTR szFileName)> callLoad;
         callLoad = openFileDialog;
@@ -505,7 +538,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         wcex.lpszMenuName = 0;
 		
 		wcex.lpszClassName = L"loadOne";
-		wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+        wcex.hIconSm = NULL; //LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1)); // was IDI_SMALL
 
 	 RegisterClassExW(&wcex);
 	
@@ -547,6 +580,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
      ::SetWindowLongPtrW(hWnd, GWL_STYLE, static_cast<LONG>(WS_POPUP | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX));
      set_shadow(hWnd, true);
+     
+
+
 
      //::SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
      //::ShowWindow(hWnd, SW_SHOW);
